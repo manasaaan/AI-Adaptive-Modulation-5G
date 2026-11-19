@@ -11,7 +11,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
 
-st.set_page_config(page_title='AI Adaptive Modulation | Validated Phase 6', layout='wide')
+st.set_page_config(page_title='AI Adaptive Modulation | 5G Wireless Communication', layout='wide')
 
 @st.cache_resource(show_spinner='Loading Phase 6 validated experiment (training and bit simulation)...')
 def load_validation():
@@ -57,12 +57,12 @@ def evaluate(pred, margin):
                 violation_rate=violations/tx if tx else np.nan,
                 correct_bits=(total_bits-total_errors)/(len(choices)*v.SYMBOLS_PER_STEP))
 
-st.title('AI-Assisted Adaptive Modulation — Validated Phase 6')
-st.caption('Phase 4C trained models + Phase 5A Gray-coded QAM bit-level AWGN | Synthetic channel, not a full 5G NR implementation')
+st.title('AI-Assisted Adaptive Modulation for 5G Wireless Communication')
+st.caption('Machine Learning-Based Channel Prediction and Adaptive QAM Performance Analysis')
 with st.sidebar:
     st.header('Experiment controls')
     margin = st.slider('Tuned RF safety margin (dB)', 0.0, 6.0, float(tuned['margin']), 0.5)
-    st.caption(f'Validated Phase 4C margin: {tuned["margin"]:.1f} dB. Other margins are exploratory and do not retrain AI.')
+    st.caption(f'Validation-selected safety margin: {tuned["margin"]:.1f} dB. Other settings are exploratory and do not retrain the AI model.')
     show_steps = st.slider('Number of test steps displayed', 30, len(v.ytest), len(v.ytest))
     st.markdown('**Fixed validation settings**')
     st.write(f'Target BER: {v.TARGET_BER:g}')
@@ -86,7 +86,7 @@ results = {name: evaluate(pred, m) for name, (pred, m) in preds.items()}
 interactive = evaluate(tuned['pred_test'], margin)
 
 if margin != float(tuned['margin']):
-    st.warning(f'Exploratory margin {margin:.1f} dB selected. Validated Phase 6 comparison below remains fixed at {tuned["margin"]:.1f} dB.')
+    st.warning(f'Exploratory safety margin: {margin:.1f} dB. The final comparison table retains the validation-selected setting of {tuned["margin"]:.1f} dB for the tuned RF.')
 
 c1,c2,c3,c4 = st.columns(4)
 c1.metric('Tuned RF test MAE', f'{tuned["test_mae"]:.4f} dB')
@@ -137,7 +137,7 @@ df = pd.DataFrame(rows)
 st.dataframe(df, hide_index=True, use_container_width=True)
 st.download_button('Download validated comparison CSV', df.to_csv(index=False),
                    file_name='phase6_dashboard_comparison.csv', mime='text/csv')
-st.caption('These eight rows use the fixed Phase 4C validation-selected margins and reproduce Phase 6. Changing the sidebar margin does not alter this table.')
+st.caption('This table compares eight fixed controller configurations using the validated simulation and validation-selected safety margins. Changing the sidebar margin updates the interactive results, not this table.')
 
 st.subheader('5. Inspect one transmission step')
 step = st.slider('Select held-out test step', 0, len(v.ytest)-1, 0)
@@ -149,7 +149,7 @@ b.metric('AI-predicted Eb/N0', f'{predicted_db:.2f} dB')
 c.metric('Selected modulation', mod_name)
 
 st.subheader('6. AI Decision Explanation')
-st.caption('Random Forest predicts channel quality; a BER-threshold decision rule chooses the modulation. This is not a generative AI chatbot.')
+st.caption('A trained Random Forest predicts channel quality; a BER-threshold rule then selects the modulation. The AI predicts channel conditions rather than generating text or chat responses.')
 a,b,c = st.columns(3)
 a.metric('AI prediction', f'{predicted_db:.2f} dB')
 b.metric('Safety adjustment', f'-{margin:.2f} dB')
